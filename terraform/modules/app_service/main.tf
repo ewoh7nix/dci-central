@@ -37,6 +37,13 @@ resource "azurerm_linux_web_app" "webapp" {
     name                              = "webapp-${random_integer.ri.result}" 
     resource_group_name               = var.resource_group_name_prefix
     service_plan_id                   = azurerm_service_plan.appserviceplan.id
+    app_settings                      = {
+        "MYSQL_HOST"     = azure_mysql.azurerm_private_dns_zone_virtual_network_link.default.private_dns_zone_name
+        "MYSQL_DB"       = azure_mysql.azurerm_mysql_flexible_database.main.name
+        "MYSQL_USER"     = azure_mysql.azurerm_mysql_flexible_server.default.administrator_login
+        "MYSQL_PASSWORD" = azure_mysql.azurerm_mysql_flexible_server.default.administrator_password
+    }
+
     site_config {
         always_on                               = false
         container_registry_use_managed_identity = false
