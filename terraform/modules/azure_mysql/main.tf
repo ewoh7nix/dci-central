@@ -64,32 +64,6 @@ resource "azurerm_subnet" "appservices" {
   }
 }
 
-# VNET integration app service
-#resource "azurerm_app_service_virtual_network_swift_connection" "dci_vnet_integration" {
-#  app_service_id = app_service.azurerm_linux_web_app.webapp.id
-#  subnet_id      = azurerm_subnet.appservices.id
-#}
-
-# Private endpoint
-#resource "azurerm_private_endpoint" "dcicentral" {
-#  name                = "example-endpoint"
-#  location            = azurerm_resource_group.rg.location
-#  resource_group_name = azurerm_resource_group.rg.name
-#  subnet_id           = azurerm_subnet.appservices.id
-#
-#  private_service_connection {
-#    name                           = "example-privateserviceconnection"
-#    private_connection_resource_id = azurerm_storage_account.example.id
-#    subresource_names              = ["blob"]
-#    is_manual_connection           = false
-#  }
-#
-#  private_dns_zone_group {
-#    name                 = "example-dns-zone-group"
-#    private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
-#  }
-#}
-
 # Enables you to manage Private DNS zones within Azure DNS
 resource "azurerm_private_dns_zone" "default" {
   name                = "${var.resource_group_name_prefix}.mysql.database.azure.com"
@@ -133,3 +107,25 @@ resource "azurerm_mysql_flexible_server" "default" {
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.default]
 }
+
+# VNET integration app service
+resource "azurerm_app_service_virtual_network_swift_connection" "dci_vnet_integration" {
+  app_service_id = app_service.azurerm_linux_web_app.webapp.id
+  subnet_id      = azurerm_subnet.appservices.id
+}
+
+# Private endpoint
+resource "azurerm_private_endpoint" "dcicentral" {
+  name                = "dci-private-endpoint"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = azurerm_subnet.appservices.id
+
+  private_service_connection {
+    name                           = "mysql_private_endpoint"
+    is_manual_connection           = false
+    private_connection_resource_id = azurerm_mysql_flexible_server.default.id
+    subresource_names              = ["mysqlServer"]
+  }
+}
+
