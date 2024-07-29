@@ -22,4 +22,4 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build . -t ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:$(date +%s)
-        docker push ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:$(date +%s)
+        docker push --all-tags ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:$(date +%s)
