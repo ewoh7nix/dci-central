@@ -58,7 +58,7 @@ resource "azurerm_linux_web_app" "webapp" {
         worker_count                            = 1
 
         application_stack {
-            docker_image     = "index.docker.io/nginx"
+            docker_image     = "index.docker.io/ewoh7nix/getting-started"
             docker_image_tag = "latest"
         }
     }
