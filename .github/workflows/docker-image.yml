@@ -21,6 +21,7 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
     - name: Build the Docker image
       run: |
-        docker build . -t ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:$(date +%s)
-        docker tag ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:$(date +%s) ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:latest
+        tag=$(date +%s)
+        docker build . -t ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:$tag
+        docker tag ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:$tag ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral:latest
         docker push --all-tags ${{ secrets.ACR_REGISTRY_HOST }}/dcicentral
