@@ -57,7 +57,7 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-latest
     outputs:
-      tags: ${{ steps.metadata.outputs.tags }}
+      tags: ${{ steps.metadata.outputs.json.tags }}
       labels: ${{ steps.metadata.outputs.labels }}
     steps:
       - uses: actions/checkout@v4
