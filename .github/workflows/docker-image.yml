@@ -69,6 +69,7 @@ jobs:
       id: metadata
       with:
         images: ${{ env.IMAGE_NAME }}
+        tags: type=sha
 
     - name: Build and push the Docker image
       uses: docker/build-push-action@v6
