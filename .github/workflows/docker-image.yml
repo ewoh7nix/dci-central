@@ -26,8 +26,7 @@ on:
         required: true
 
 env:
-  #TEST_TAG: ${{ secrets.DOCKERHUB_USERNAME}}/dcicentral:test
-  LATEST_TAG: ${{ secrets.DOCKERHUB_USERNAME}}/dcicentral:latest
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
 jobs:
   build:
@@ -65,21 +64,20 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-    #- name: Build and export Docker image
-    #  uses: docker/build-push-action@v6
-    #  with:
-    #    load: true
-    #    tags: ${{ env.TEST_TAG }}
-    #- name: Test Docker image
-    #  run: |
-    #    docker run --rm ${{ env.TEST_TAG }}
+    - name: Extract metadata for Docker
+      uses: docker/metadata-action@v3
+      id: metadata
+      with:
+        images: ${{ env.IMAGE_NAME }}
 
     - name: Build and push the Docker image
       uses: docker/build-push-action@v6
       with:
+        context: .
         push: true
         file: ./Dockerfile
-        tags: ${{ env.LATEST_TAG }}
+        tags: ${{ steps.metadata.outputs.tags }}
+        labels: ${{ steps.metadata.outputs.labels }}
   
   deploy:
     name: Deploy to Production
