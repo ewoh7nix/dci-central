@@ -93,9 +93,7 @@ jobs:
     steps:
       - env:
           docker_tags: ${{ needs.build-image.outputs.docker_tags }}
-        run: echo "docker_tags=${{ docker_tags }}"
-      - name: Debug
-        run: echo "tags = ${{ needs.build-image.outputs.docker_tags }}"
+        run: echo "docker_tags=$docker_tags"
       #- name: Deploy to Azure Web App
       #  id: deploy-to-webapp
       #  uses: azure/webapps-deploy@v2
