@@ -57,8 +57,8 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-latest
     outputs:
-      tags: ${{ steps.metadata.outputs.json.tags }}
-      labels: ${{ steps.metadata.outputs.labels }}
+      docker_tags: ${{ steps.metadata.outputs.tags }}
+      docker_labels: ${{ steps.metadata.outputs.labels }}
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -97,7 +97,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: 'index.docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{ needs.build-image.outputs.labels }}${{ needs.build-image.outputs.tags }}'
+          images: 'index.docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{ needs.build-image.outputs.docker_tags }}'
 
   deploy-to-production:
     name: Deploy to Production
