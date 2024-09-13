@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [22.x]
 
     steps:
       - name: Checkout the repository
@@ -69,7 +69,7 @@ jobs:
       id: metadata
       with:
         images: ${{ env.IMAGE_NAME }}
-        tags: type=sha
+        tags: type=sha, prefix={{date 'YYYYMMDD'}}-
 
     - name: Build and push the Docker image
       uses: docker/build-push-action@v6
