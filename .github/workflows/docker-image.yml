@@ -65,7 +65,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: GREEN-${{ env.RELEASE_DATE }}
-          release_name: Release ${{ env.RELEASE_DATE }}
+          release_name: GREEN-${{ env.RELEASE_DATE }}
           draft: false
           prerelease: false
 
