@@ -59,7 +59,7 @@ jobs:
         run: |
           RELEASE_DATE=$(date +%Y%m%d)
           GIT_SHORT_SHA=$(git rev-parse --short "$GITHUB_SHA")
-          echo "GITHUB_TAG_NAME=DCI-$RELEASE_DATA-$GIT_SHORT_SHA" >> $GITHUB_ENV
+          echo "GITHUB_TAG_NAME=DCI-$RELEASE_DATE-$GIT_SHORT_SHA" >> $GITHUB_OUTPUT
 
       - name: Create Tag Release # tag format: GREEN-${date}-${git.sha}
         id: create_release
@@ -89,7 +89,7 @@ jobs:
           context: .
           push: true
           file: ./Dockerfile
-          tags: ${{ secrets.DOCKERHUB_USERNAME}}/${{ env.GITHUB_TAG_NAME }}
+          tags: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
   
  # deploy-to-staging:
  #   name: Deploy to Staging
