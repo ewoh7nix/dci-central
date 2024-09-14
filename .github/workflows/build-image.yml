@@ -59,7 +59,7 @@ jobs:
         run: |
           RELEASE_DATE=$(date +%Y%m%d)
           GIT_SHORT_SHA=$(git rev-parse --short "$GITHUB_SHA")
-          echo "GITHUB_TAG_NAME=DCI-$RELEASE_DATE-$GIT_SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "GITHUB_TAG_NAME=DCI-$RELEASE_DATE-$GIT_SHORT_SHA" >> $GITHUB_ENV
 
       - name: Create Tag Release # tag format: GREEN-${date}-${git.sha}
         id: create_release
