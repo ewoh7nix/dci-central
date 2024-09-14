@@ -2,7 +2,7 @@ name: Deployment Workflow
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "feature-1/*" ]
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
@@ -39,7 +39,8 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-
+    outputs:
+      github_tag_name: ${{ steps.git_tag.outputs.GITHUB_TAG_NAME }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -55,17 +56,21 @@ jobs:
         run: npm run build --if-present
       - name: Run unit test
         run: npm test
-      - name: Set release date
+      - name: Set github tag/release name
+        id: git_tag
         run: |
-          echo "RELEASE_DATE=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_ENV
-      - name: Create Tag Release
+          RELEASE_DATE=$(date +%Y%m%d)
+          GIT_SHORT_SHA=$(git rev-parse --short "$GITHUB_SHA")
+          echo "GITHUB_TAG_NAME=DCI-$RELEASE_DATE-$GIT_SHORT_SHA" >> $GITHUB_ENV
+
+      - name: Create Tag Release # tag format: GREEN-${date}-${git.sha}
         id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: GREEN-${{ env.RELEASE_DATE }}
-          release_name: GREEN-${{ env.RELEASE_DATE }}
+          tag_name: ${{ env.GITHUB_TAG_NAME }}
+          release_name: ${{ env.GITHUB_TAG_NAME }}
           draft: false
           prerelease: false
 
@@ -73,9 +78,6 @@ jobs:
     needs: build
     name: Build Docker image
     runs-on: ubuntu-latest
-    outputs:
-      docker_tags: ${{ steps.metadata.outputs.tags }}
-      docker_labels: ${{ steps.metadata.outputs.labels }}
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -83,34 +85,26 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-      - name: Extract metadata for Docker
-        uses: docker/metadata-action@v5
-        id: metadata
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: type=sha, prefix={{date 'YYYYMMDD'}}-
-
       - name: Build and push the Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           file: ./Dockerfile
-          tags: ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
+          tags: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.github_tag_name }}
   
-  deploy-to-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: build-image
-    environment:
-      name: 'staging'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+ # deploy-to-staging:
+ #   name: Deploy to Staging
+ #   runs-on: ubuntu-latest
+ #   needs: build-image
+ #   environment:
+ #     name: 'staging'
+ #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-    steps:
-      - env:
-          docker_tags: ${{ needs.build-image.outputs.docker_tags }}
-        run: echo "docker_tags=$docker_tags"
+ #   steps:
+ #     - env:
+ #         docker_tags: ${{ needs.build-image.outputs.docker_tags }}
+ #       run: echo "docker_tags=$docker_tags"
       #- name: Deploy to Azure Web App
       #  id: deploy-to-webapp
       #  uses: azure/webapps-deploy@v2
@@ -118,20 +112,3 @@ jobs:
       #    app-name: ${{ env.AZURE_WEBAPP_NAME }}
       #    publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
       #    images: 'index.docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{ needs.build-image.outputs.docker_tags }}'
-
-  deploy-to-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: build-image
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: 'index.docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{ needs.build-image.outputs.tags }}'
