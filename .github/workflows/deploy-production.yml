@@ -1,0 +1,25 @@
+name: Deploy to production
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Enter the release name/tag to deploy'
+        required: true
+        type: string
+
+jobs:
+  deploy-to-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: 'index.docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{ needs.build-image.outputs.tags }}'
