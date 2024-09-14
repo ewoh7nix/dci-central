@@ -39,7 +39,8 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-
+    outputs:
+      github_tag_name: ${{ steps.git_tag.outputs.GITHUB_TAG_NAME }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -56,6 +57,7 @@ jobs:
       - name: Run unit test
         run: npm test
       - name: Set github tag/release name
+        id: git_tag
         run: |
           RELEASE_DATE=$(date +%Y%m%d)
           GIT_SHORT_SHA=$(git rev-parse --short "$GITHUB_SHA")
@@ -89,7 +91,7 @@ jobs:
           context: .
           push: true
           file: ./Dockerfile
-          tags: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
+          tags: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.github_tag_name }}
   
  # deploy-to-staging:
  #   name: Deploy to Staging
