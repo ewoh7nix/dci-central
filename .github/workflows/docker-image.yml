@@ -32,6 +32,10 @@ jobs:
   build:
     name: Install, build and test the codes
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
     strategy:
       matrix:
         node-version: [22.x]
