@@ -78,6 +78,8 @@ jobs:
     needs: build
     name: Build Docker image
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TAG_NAME: ${{ needs.build.outputs.github_tag_name }}
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -91,7 +93,7 @@ jobs:
           context: .
           push: true
           file: ./Dockerfile
-          tags: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.github_tag_name }}
+          tags: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
   
  # deploy-to-staging:
  #   name: Deploy to Staging
