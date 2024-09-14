@@ -61,7 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: DCI-{{ date 'YYYYMMDD }}
+          tag_name: DCI-{{ date 'YYYYMMDD' }}
           release_name: DCI-{{ date 'YYYYMMDD' }}
           draft: false
           prerelease: false
