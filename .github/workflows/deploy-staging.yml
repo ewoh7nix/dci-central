@@ -8,7 +8,7 @@ on:
         type: string
 
 jobs:
-  deploy-to-production:
+  deploy-to-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     environment:
