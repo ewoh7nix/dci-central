@@ -1,11 +1,9 @@
 name: Deploy to production
 on:
   workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Enter the release name/tag to deploy'
-        required: true
-        type: string
+
+env:
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/dcicentral
 
 jobs:
   deploy-to-production:
@@ -19,7 +17,6 @@ jobs:
       - name: Debug
         run: |
           echo "Github event: ${{ github.event }}"
-          echo "Github event input: ${{ github.event.inputs.tags }}"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -27,4 +24,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: 'index.docker.io/${{secrets.DOCKERHUB_USERNAME}}/${{ needs.build-image.outputs.tags }}'
+          images: 'index.docker.io/${{ env.IMAGE_NAME }}:${{ needs.build-image.outputs.tags }}'
