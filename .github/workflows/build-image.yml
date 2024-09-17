@@ -2,7 +2,7 @@ name: Build Workflow
 
 on:
   push:
-    branches: [ "feature-1/*" ]
+    branches: [ "feature-1/*", "master" ]
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
       - name: Set github tag/release name
         id: git_tag
         run: |
-          RELEASE_DATE=$(date +%Y%m%d)
+          RELEASE_DATE=$(date +%Y%m%d-%M%H%S)
           GIT_SHORT_SHA=$(git rev-parse --short "$GITHUB_SHA")
           echo "GITHUB_TAG_NAME=DCI-$RELEASE_DATE-$GIT_SHORT_SHA" >> $GITHUB_ENV
           echo "GITHUB_TAG_NAME=DCI-$RELEASE_DATE-$GIT_SHORT_SHA" >> $GITHUB_OUTPUT
@@ -79,6 +79,8 @@ jobs:
     needs: build
     name: Build Docker image
     runs-on: ubuntu-latest
+    outputs:
+      github_tag_name: ${{ needs.build.outputs.github_tag_name }}
     env:
       GITHUB_TAG_NAME: ${{ needs.build.outputs.github_tag_name }}
     steps:
@@ -97,7 +99,7 @@ jobs:
           tags: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
 
   call-staging-deployment:
-    needs: build
+    needs: build-image
     uses: ewoh7nix/dci-central/.github/workflows/deploy-staging.yml@master
     with:
-      tags: ${{ needs.build.outputs.github_tag_name }}
+      tags: ${{ needs.build-image.outputs.github_tag_name }}
