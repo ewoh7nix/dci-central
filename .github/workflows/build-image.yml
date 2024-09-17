@@ -95,3 +95,9 @@ jobs:
           push: true
           file: ./Dockerfile
           tags: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
+
+  call-staging-deployment:
+    needs: build
+    uses: ./deploy-staging.yml
+    with:
+      tags: ${{ needs.build.outputs.github_tag_name }}
