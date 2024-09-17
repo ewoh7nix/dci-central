@@ -98,6 +98,6 @@ jobs:
 
   call-staging-deployment:
     needs: build
-    uses: ./deploy-staging.yml
+    uses: ./deploy-staging.yml@master
     with:
       tags: ${{ needs.build.outputs.github_tag_name }}
