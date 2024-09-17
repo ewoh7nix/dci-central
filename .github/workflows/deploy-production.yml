@@ -1,11 +1,6 @@
 name: Deploy to production
 on:
   workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Enter the release name/tag to deploy'
-        required: true
-        type: string
 
 jobs:
   deploy-to-production:
