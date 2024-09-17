@@ -16,7 +16,9 @@ jobs:
     steps:
       - name: Debug
         run: |
-          echo "Github event: ${{ github.event }}"
+          echo "Github.ref: ${{ github.ref }}"
+          echo "GIthub.ref_name: ${{ github.ref_name }}"
+          echo "Github.ref_type: ${{ github.ref_type }}"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
