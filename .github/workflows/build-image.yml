@@ -101,5 +101,6 @@ jobs:
   call-staging-deployment:
     needs: build-image
     uses: ewoh7nix/dci-central/.github/workflows/deploy-staging.yml@master
+    secrets: inherit
     with:
       tags: ${{ needs.build-image.outputs.github_tag_name }}
