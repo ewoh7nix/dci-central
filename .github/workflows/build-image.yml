@@ -98,6 +98,6 @@ jobs:
 
   call-staging-deployment:
     needs: build
-    uses: .github/workflows/deploy-staging.yml@master
+    uses: ewoh7nix/dci-central/.github/workflows/deploy-staging.yml@master
     with:
       tags: ${{ needs.build.outputs.github_tag_name }}
