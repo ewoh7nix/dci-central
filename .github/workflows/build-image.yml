@@ -31,7 +31,7 @@ env:
 jobs:
   build:
     name: Install, build and test the codes
-    runs-on: self-hosted
+    runs-on: [self-hosted, ubuntu-latest]
     permissions:
       contents: write
       pull-requests: write
@@ -78,7 +78,7 @@ jobs:
   build-image:
     needs: build
     name: Build Docker image
-    runs-on: self-hosted
+    runs-on: [self-hosted, ubuntu-latest]
     outputs:
       github_tag_name: ${{ needs.build.outputs.github_tag_name }}
     env:
