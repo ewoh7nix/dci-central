@@ -6,6 +6,7 @@ on:
       tags:
         required: true
         type: string
+        default: ${{ github.ref_name }}
 
 env:
   IMAGE_TAG: ${{ inputs.tags }}
