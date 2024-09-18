@@ -6,10 +6,9 @@ on:
       tags:
         required: true
         type: string
-        default: ${{ github.ref_name }}
 
 env:
-  IMAGE_TAG: ${{ inputs.tags }}
+  IMAGE_TAG: ${{ inputs.tags || github.ref_name }}
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/dcicentral
 
 jobs:
