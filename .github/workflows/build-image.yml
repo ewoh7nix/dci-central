@@ -103,6 +103,7 @@ jobs:
         with:
           image: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
           annotations: true
+          dockerfile: ./Dockerfile
 
   call-staging-deployment:
     needs: build-image
