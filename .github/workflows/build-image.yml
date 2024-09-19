@@ -31,7 +31,7 @@ env:
 jobs:
   build:
     name: Install, build and test the codes
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
@@ -78,7 +78,7 @@ jobs:
   build-image:
     needs: build
     name: Build Docker image
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ubuntu-latest
     outputs:
       github_tag_name: ${{ needs.build.outputs.github_tag_name }}
     env:
@@ -97,6 +97,12 @@ jobs:
           push: true
           file: ./Dockerfile
           tags: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
+      - name: Scan docker image for vulnerabilities
+        id: scan
+        uses: crazy-max/ghaction-container-scan@v3
+        with:
+          image: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
+          annotations: true
 
   call-staging-deployment:
     needs: build-image
