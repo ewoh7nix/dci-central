@@ -104,6 +104,17 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}
           annotations: true
           dockerfile: ./Dockerfile
+      - name: Test docker image
+        run: |
+          CONTAINER_ID=$(docker run -d -p 8080:80 "${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}")
+          STATUS_CODE=$(curl -w '%{response_code}\n') -o /dev/null -s http://localhost:8080)
+          if [[ $STATUS_CODE -eq 200 ]]; then
+            echo "Docker test passed!"
+          else
+            echo "Docker test failed, got $STATUS_CODE, expect 200"
+
+          # Stopping container
+          docker rm $CONTAINER_ID
 
   call-staging-deployment:
     needs: build-image
