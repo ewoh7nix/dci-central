@@ -112,9 +112,10 @@ jobs:
             echo "Docker test passed!"
           else
             echo "Docker test failed, got $STATUS_CODE, expect 200"
+          fi
 
           # Stopping container
-          docker rm $CONTAINER_ID
+          docker stop $CONTAINER_ID
 
   call-staging-deployment:
     needs: build-image
