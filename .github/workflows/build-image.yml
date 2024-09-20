@@ -106,7 +106,7 @@ jobs:
           docker stop $CONTAINER_ID
 
   call-staging-deployment:
-    if: inputs.deploy-staging == true
+    if: ${{ inputs.deploy-staging || true }}
     needs: build-image
     uses: ewoh7nix/dci-central/.github/workflows/deploy-staging.yml@master
     secrets: inherit
