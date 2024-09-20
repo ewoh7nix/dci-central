@@ -10,11 +10,8 @@ on:
       deploy-staging:
         description: 'Deploy to staging environment?'
         required: true
-        default: 'yes'
-        type: choice
-        options:
-        - yes
-        - no
+        default: true
+        type: boolean
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/dcicentral
@@ -109,7 +106,7 @@ jobs:
           docker stop $CONTAINER_ID
 
   call-staging-deployment:
-    if: inputs.deploy-staging != 'no'
+    if: inputs.deploy-staging == true
     needs: build-image
     uses: ewoh7nix/dci-central/.github/workflows/deploy-staging.yml@master
     secrets: inherit
