@@ -107,7 +107,7 @@ jobs:
       - name: Test docker image
         run: |
           CONTAINER_ID=$(docker run -d -p 8080:80 "${{ env.IMAGE_NAME }}:${{ env.GITHUB_TAG_NAME }}")
-          STATUS_CODE=$(curl -w '%{response_code}\n') -o /dev/null -s http://localhost:8080)
+          STATUS_CODE=$(curl -w '%{response_code}' -o /dev/null -s http://localhost:8080)
           if [[ $STATUS_CODE -eq 200 ]]; then
             echo "Docker test passed!"
           else
