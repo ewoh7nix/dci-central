@@ -7,23 +7,14 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: 'Log level'
+      deploy-staging:
+        description: 'Deploy to staging environment?'
         required: true
-        default: 'warning'
+        default: 'yes'
         type: choice
         options:
-        - info
-        - warning
-        - debug
-      tags:
-        description: 'Test scenario tags'
-        required: false
-        type: boolean
-      environment:
-        description: 'Environment to run tests against'
-        type: environment
-        required: true
+        - yes
+        - no
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/dcicentral
@@ -118,6 +109,7 @@ jobs:
           docker stop $CONTAINER_ID
 
   call-staging-deployment:
+    if: ${{ inputs.deploy-staging == 'yes'}}
     needs: build-image
     uses: ewoh7nix/dci-central/.github/workflows/deploy-staging.yml@master
     secrets: inherit
